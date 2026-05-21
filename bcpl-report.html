@@ -257,6 +257,12 @@
       tr { page-break-inside: avoid; }
       .report-table tr.section-head { page-break-after: avoid; }
     }
+     @media print {
+            body, div, table, td, th, span, section {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+        }
   </style>
 </head>
 <body>
