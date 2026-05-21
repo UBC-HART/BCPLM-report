@@ -466,11 +466,56 @@
   </div>
 
   <script>
-    // Stamp current date
+    // DATE STAMP
     const now = new Date();
     const fmt = now.toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
     document.getElementById('datestamp').textContent = 'Generated ' + fmt;
     document.getElementById('footer-date').textContent = fmt;
+
+    // URL PARAMETER AUTO-FILL
+    // Reads ?field=value pairs from the URL and replaces matching
+    // {field} placeholders throughout the report.
+    const params = new URLSearchParams(window.location.search);
+
+    const fields = [
+      'PID_NUMBER','Area_m2','Address_url','OwnerType','Actual_Use_Derived',
+      'Vacant','Heritage_Type','PercentImproveLand','Jurisdiction',
+      'Jurisdiction_Code','Roll_Number','Neighbourhood','TOA_Tier',
+      'DevCategory','FNTerritories','Mean','Irregular','Flood_Risk_Cat',
+      'Fire_Risk','DrainageClass','ENV_RMDTN_SITES_ID','Riparian',
+      'Road_Dist','WaterMain_Dist','BCHydroPrimary_Dist','Yield_Existing',
+      'Yield_Median','Yield_Max','cat_caf','cat_ef','cat_hf',
+      'cat_psef','cat_srf','cat_gs'
+    ];
+
+    // Walk every text node in the report and swap {field} for its value
+    function fillNode(node) {
+      if (node.nodeType === Node.TEXT_NODE) {
+        let t = node.textContent;
+        fields.forEach(f => {
+          const val = params.get(f);
+          if (val !== null) {
+            t = t.split('{' + f + '}').join(decodeURIComponent(val));
+          }
+        });
+        node.textContent = t;
+      } else {
+        node.childNodes.forEach(fillNode);
+      }
+    }
+
+    fillNode(document.getElementById('report-page'));
+
+    // Address field: turn the URL value into a clickable link
+    const addrVal = params.get('Address_url');
+    if (addrVal) {
+      document.querySelectorAll('td').forEach(td => {
+        if (td.textContent.trim() === decodeURIComponent(addrVal)) {
+          td.innerHTML = '<a href="' + decodeURIComponent(addrVal) +
+            '" target="_blank" style="color:var(--navy);">View in Google Maps</a>';
+        }
+      });
+    }
   </script>
 
 </body>
