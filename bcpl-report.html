@@ -539,15 +539,20 @@
 
     fillNode(document.getElementById('report-page'));
 
-    // Address field: turn the URL value into a clickable link
-    const addrVal = params.get('Address_url');
+    // Address field: reconstruct Google Maps URL from the `query` parameter.
+    // ArcGIS passes the Maps URL unencoded, so its internal & splits the query
+    // string — params.get('Address_url') only captures the base, and the address
+    // itself arrives as a separate `query` param.
     const addrCell = document.getElementById('address-cell');
-    if (addrVal && addrCell) {
-      const href = decodeURIComponent(addrVal);
-      addrCell.innerHTML = '<a href="' + href +
-        '" target="_blank" style="color:var(--navy);">View in Google Maps</a>';
-    } else if (addrCell) {
-      addrCell.textContent = '—';
+    if (addrCell) {
+      const query = params.get('query');
+      if (query) {
+        const href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(decodeURIComponent(query));
+        addrCell.innerHTML = '<a href="' + href +
+          '" target="_blank" style="color:var(--navy);">View in Google Maps</a>';
+      } else {
+        addrCell.textContent = '—';
+      }
     }
   </script>
 
