@@ -23,7 +23,7 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      font-family: 'Open Sans', Arial, sans-serif;
+      font-family: 'Open Sans', Arial, sans-serif !important;
       font-size: 13px;
       background: #d6dde8;
       color: var(--text);
@@ -41,7 +41,7 @@
     }
 
     #print-bar p {
-      font-family: 'Open Sans', Arial, sans-serif;
+      font-family: 'Open Sans', Arial, sans-serif !important;
       font-size: 0.7rem;
       color: #556;
       letter-spacing: 0.04em;
@@ -51,7 +51,7 @@
       display: inline-flex;
       align-items: center;
       gap: 0.5rem;
-      font-family: 'Open Sans', Arial, sans-serif;
+      font-family: 'Open Sans', Arial, sans-serif !important;
       font-weight: 500;
       letter-spacing: 0.06em;
       text-transform: uppercase;
@@ -88,7 +88,7 @@
     }
 
     .report-header-left h1 {
-      font-family: 'Bahnschrift', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      font-family: 'Bahnschrift', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif !important;
       font-size: 1.4rem;
       font-weight: 600;
       letter-spacing: -0.01em;
@@ -110,7 +110,7 @@
     }
 
     .report-header-right .label {
-      font-family: 'Open Sans', Arial, sans-serif;
+      font-family: 'Open Sans', Arial, sans-serif !important;
       font-size: 0.62rem;
       letter-spacing: 0.1em;
       text-transform: uppercase;
@@ -119,7 +119,7 @@
     }
 
     .report-header-right .pid {
-      font-family: 'Open Sans', Arial, sans-serif;
+      font-family: 'Open Sans', Arial, sans-serif !important;
       font-size: 1rem;
       font-weight: 500;
       color: var(--white);
@@ -127,7 +127,7 @@
     }
 
     .report-header-right .datestamp {
-      font-family: 'Open Sans', Arial, sans-serif;
+      font-family: 'Open Sans', Arial, sans-serif !important;
       font-size: 0.62rem;
       color: var(--blue-acc);
       margin-top: 0.3rem;
@@ -139,7 +139,7 @@
       background: var(--navy-mid);
       color: var(--blue-acc);
       padding: 0.55rem 2.5rem;
-      font-family: 'Open Sans', Arial, sans-serif;
+      font-family: 'Open Sans', Arial, sans-serif !important;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       display: flex;
@@ -166,7 +166,7 @@
       background: var(--navy);
       color: var(--white);
       padding: 7px 10px 6px;
-      font-family: 'Bahnschrift', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+      font-family: 'Bahnschrift', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif !important;
       font-weight: 500;
       letter-spacing: 0.09em;
       text-transform: uppercase;
@@ -198,13 +198,13 @@
     }
 
     .report-table td:last-child {
-      font-family: 'Open Sans', Arial, sans-serif;
+      font-family: 'Open Sans', Arial, sans-serif !important;
       color: var(--navy);
       font-weight: 500;
     }
 
     .row-note {
-      font-family: 'Open Sans', Arial, sans-serif;
+      font-family: 'Open Sans', Arial, sans-serif !important;
       font-size: 0.7rem;
       font-style: italic;
       color: var(--muted);
@@ -218,7 +218,7 @@
       background: var(--navy);
       color: var(--blue-acc);
       padding: 0.8rem 2.5rem;
-      font-family: 'Open Sans', Arial, sans-serif;
+      font-family: 'Open Sans', Arial, sans-serif !important;
       letter-spacing: 0.06em;
       display: flex;
       justify-content: space-between;
@@ -330,7 +330,7 @@
           <td>{Heritage_Type}</td>
         </tr>
         <tr class="row-a">
-          <td>Improvement value as % of land value <span class="row-note">%</span></td>
+          <td>Improvement value as % of land value</td>
           <td>{PercentImproveLand}</td>
         </tr>
 
@@ -371,7 +371,7 @@
         <!-- ── SITE CONDITIONS ── -->
         <tr class="section-head"><td colspan="2">Site Conditions</td></tr>
         <tr class="row-a">
-          <td>Mean slope <span class="row-note">degrees</span></td>
+          <td>Mean slope</td>
           <td>{Mean}</td>
         </tr>
         <tr class="row-b">
@@ -490,6 +490,37 @@
       'cat_psef','cat_srf','cat_gs'
     ];
 
+    // Fields that should be formatted with comma separators
+    const numericFields = new Set([
+      'Area_m2','Road_Dist','WaterMain_Dist','BCHydroPrimary_Dist',
+      'Yield_Existing','Yield_Median','Yield_Max'
+    ]);
+
+    // Fields that should show one decimal place, with an optional suffix
+    const decimalFields = {
+      'Mean':                 { decimals: 1, suffix: '°' },
+      'PercentImproveLand':   { decimals: 1, suffix: '%' }
+    };
+
+    // Format a value according to its field rules
+    function formatValue(field, raw) {
+      const decoded = decodeURIComponent(raw);
+      if (numericFields.has(field)) {
+        const n = Number(decoded);
+        if (!isNaN(n) && decoded.trim() !== '') {
+          return n.toLocaleString('en-CA');
+        }
+      }
+      if (decimalFields[field]) {
+        const n = Number(decoded);
+        if (!isNaN(n) && decoded.trim() !== '') {
+          const { decimals, suffix } = decimalFields[field];
+          return n.toFixed(decimals) + suffix;
+        }
+      }
+      return decoded;
+    }
+
     // Walk every text node in the report and swap {field} for its value
     function fillNode(node) {
       if (node.nodeType === Node.TEXT_NODE) {
@@ -497,7 +528,7 @@
         fields.forEach(f => {
           const val = params.get(f);
           if (val !== null) {
-            t = t.split('{' + f + '}').join(decodeURIComponent(val));
+            t = t.split('{' + f + '}').join(formatValue(f, val));
           }
         });
         node.textContent = t;
