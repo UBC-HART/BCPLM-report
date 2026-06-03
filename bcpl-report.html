@@ -311,7 +311,7 @@
         </tr>
         <tr class="row-b">
           <td>Address (Google Maps)</td>
-          <td>{Address_url}</td>
+          <td id="address-cell">{Address_url}</td>
         </tr>
         <tr class="row-a">
           <td>Owner type</td>
@@ -480,7 +480,7 @@
     const params = new URLSearchParams(window.location.search);
 
     const fields = [
-      'PID_NUMBER','Area_m2','Address_url','OwnerType','Actual_Use_Derived',
+      'PID_NUMBER','Area_m2','OwnerType','Actual_Use_Derived',
       'Vacant','Heritage_Type','PercentImproveLand','Jurisdiction',
       'Jurisdiction_Code','Roll_Number','Neighbourhood','TOA_Tier',
       'DevCategory','FNTerritories','Mean','Irregular','Flood_Risk_Cat',
@@ -541,13 +541,13 @@
 
     // Address field: turn the URL value into a clickable link
     const addrVal = params.get('Address_url');
-    if (addrVal) {
-      document.querySelectorAll('td').forEach(td => {
-        if (td.textContent.trim() === decodeURIComponent(addrVal)) {
-          td.innerHTML = '<a href="' + decodeURIComponent(addrVal) +
-            '" target="_blank" style="color:var(--navy);">View in Google Maps</a>';
-        }
-      });
+    const addrCell = document.getElementById('address-cell');
+    if (addrVal && addrCell) {
+      const href = decodeURIComponent(addrVal);
+      addrCell.innerHTML = '<a href="' + href +
+        '" target="_blank" style="color:var(--navy);">View in Google Maps</a>';
+    } else if (addrCell) {
+      addrCell.textContent = '—';
     }
   </script>
 
