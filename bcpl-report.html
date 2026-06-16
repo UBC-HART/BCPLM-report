@@ -140,14 +140,15 @@
       color: var(--blue-acc);
       padding: 0.55rem 2.5rem;
       font-family: 'Open Sans', Arial, sans-serif !important;
+      font-size: 0.62rem;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       display: flex;
       gap: 2rem;
     }
 
-    .meta-strip span { opacity: 0.8; }
-    .meta-strip strong { color: var(--white); font-weight: 500; opacity: 1; }
+    .meta-strip span { opacity: 0.8; line-height: 1.8; }
+    .meta-strip strong { display: block; color: var(--white); font-weight: 500; font-size: 0.78rem; letter-spacing: 0.02em; text-transform: none; opacity: 1; }
 
     /* ── REPORT BODY ───────────────────────────── */
     .report-body {
@@ -331,8 +332,9 @@
 
     <!-- Meta strip -->
     <div class="meta-strip">
-      <span>Jurisdiction: <strong>{Jurisdiction}</strong></span>
-      <span>Roll: <strong>{Roll_Number}</strong></span>
+      <span>Full Address<br><strong>{full_address}</strong></span>
+      <span>Jurisdiction<br><strong>{Jurisdiction}</strong></span>
+      <span>Roll Number<br><strong>{Roll_Number}</strong></span>
     </div>
 
     <!-- Body -->
@@ -369,14 +371,16 @@
         <!-- ── PROPERTY RECORD ── -->
         <tr class="section-head"><td colspan="3">Property Record</td></tr>
         <tr class="row-a">
-          <td colspan="3">Jurisdiction:<br><strong>{Jurisdiction}</strong></td>
+          <td>Jurisdiction</td>
+          <td colspan="2">{Jurisdiction}</td>
         </tr>
         <tr class="row-b">
           <td>Jurisdiction code</td>
           <td colspan="2">{Jurisdiction_Code}</td>
         </tr>
         <tr class="row-a">
-          <td colspan="3">Roll number:<br><strong>{Roll_Number}</strong></td>
+          <td>Roll number</td>
+          <td colspan="2">{Roll_Number}</td>
         </tr>
 
         <!-- ── CURRENT USE ── -->
@@ -565,7 +569,7 @@
     const params = new URLSearchParams(window.location.search);
 
     const fields = [
-      'PID_Formatted','BCPLM_Score','Area_m2','OwnerType_Clean','Actual_Use_Derived',
+      'PID_Formatted','BCPLM_Score','full_address','Area_m2','OwnerType_Clean','Actual_Use_Derived',
       'Heritage_Type','PercentImproveLand','Jurisdiction',
       'Jurisdiction_Code','Roll_Number','TOA_Tier',
       'Vacant','Underutilized','Scr_vac_under',
