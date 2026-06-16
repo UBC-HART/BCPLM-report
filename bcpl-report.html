@@ -144,10 +144,11 @@
       letter-spacing: 0.08em;
       text-transform: uppercase;
       display: flex;
-      gap: 2rem;
+      justify-content: space-between;
     }
 
     .meta-strip span { opacity: 0.8; line-height: 1.8; }
+    .meta-strip span:last-child { text-align: right; }
     .meta-strip strong { display: block; color: var(--white); font-weight: 500; font-size: 0.78rem; letter-spacing: 0.02em; text-transform: none; opacity: 1; }
 
     /* ── REPORT BODY ───────────────────────────── */
@@ -333,8 +334,8 @@
     <!-- Meta strip -->
     <div class="meta-strip">
       <span>Full Address<br><strong>{full_address}</strong></span>
-      <span>Jurisdiction<br><strong>{Jurisdiction}</strong></span>
-      <span>Roll Number<br><strong>{Roll_Number}</strong></span>
+      <span style="text-align:center;">Jurisdiction<br><strong>{Jurisdiction}</strong></span>
+      <span style="text-align:right;">Roll Number<br><strong>{Roll_Number}</strong></span>
     </div>
 
     <!-- Body -->
