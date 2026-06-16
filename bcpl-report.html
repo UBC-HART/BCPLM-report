@@ -192,12 +192,12 @@
     }
 
     .report-table td:first-child {
-      width: 52%;
+      width: 45%;
       font-weight: 400;
       color: var(--text);
     }
 
-    .report-table td:last-child {
+    .report-table td:nth-child(2) {
       font-family: 'Open Sans', Arial, sans-serif !important;
       color: var(--navy);
       font-weight: 500;
@@ -211,6 +211,39 @@
       display: block;
       margin-top: 1px;
       font-weight: 300;
+    }
+
+    /* ── SCORE COLUMN ──────────────────────────── */
+    .report-table td.score-col {
+      text-align: right;
+      white-space: nowrap;
+      width: 72px;
+      color: var(--navy);
+      font-weight: 500;
+      vertical-align: middle;
+    }
+
+    .report-table tr.section-head td.score-label {
+      text-align: right;
+      white-space: nowrap;
+      font-size: 0.62rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: var(--blue-acc);
+      text-transform: uppercase;
+      vertical-align: bottom;
+      padding-bottom: 7px;
+    }
+
+    .report-table tr.subtotal-row td {
+      background: var(--blue-acc);
+      padding: 6px 10px;
+      font-style: italic;
+    }
+
+    .report-table tr.subtotal-row td.score-col {
+      font-style: normal;
+      font-weight: 700;
     }
 
     /* ── FOOTER ────────────────────────────────── */
@@ -288,6 +321,10 @@
       <div class="report-header-right">
         <p class="label">PID Number</p>
         <p class="pid">{PID_NUMBER}</p>
+        <p class="label" style="margin-top:0.6rem;">BCPLM Score</p>
+        <div style="display:inline-block;background:#ffffff;color:#002145;font-size:0.95rem;font-weight:700;padding:4px 10px;border-radius:6px;border:2px solid #5bc4f5;letter-spacing:1px;">
+          {BCPLM_Score} <span style="font-size:0.7rem;font-weight:400;color:#555;">/ 100</span>
+        </div>
         <p class="datestamp" id="datestamp"></p>
       </div>
     </div>
@@ -296,7 +333,6 @@
     <div class="meta-strip">
       <span>Jurisdiction: <strong>{Jurisdiction}</strong></span>
       <span>Roll: <strong>{Roll_Number}</strong></span>
-      <span>Neighbourhood: <strong>{Neighbourhood}</strong></span>
     </div>
 
     <!-- Body -->
@@ -304,156 +340,205 @@
       <table class="report-table">
 
         <!-- ── PROPERTY DETAILS ── -->
-        <tr class="section-head"><td colspan="2">Property Details</td></tr>
+        <tr class="section-head"><td colspan="3">Property Details</td></tr>
         <tr class="row-a">
           <td>Parcel area <span class="row-note">m²</span></td>
-          <td>{Area_m2}</td>
+          <td colspan="2">{Area_m2}</td>
         </tr>
         <tr class="row-b">
           <td>Address (Google Maps)</td>
-          <td id="address-cell">{Address_url}</td>
+          <td colspan="2" id="address-cell">{Address_url}</td>
         </tr>
         <tr class="row-a">
           <td>Owner type</td>
-          <td>{OwnerType}</td>
+          <td colspan="2">{OwnerType_Clean}</td>
         </tr>
         <tr class="row-b">
           <td>Current use</td>
-          <td>{Actual_Use_Derived}</td>
+          <td colspan="2">{Actual_Use_Derived}</td>
+        </tr>
+        <tr class="row-a">
+          <td>Heritage designation <span class="row-note">if applicable</span></td>
+          <td colspan="2">{Heritage_Type}</td>
+        </tr>
+        <tr class="row-b">
+          <td>Improvement value as % of land value</td>
+          <td colspan="2">{PercentImproveLand}</td>
+        </tr>
+
+        <!-- ── PROPERTY RECORD ── -->
+        <tr class="section-head"><td colspan="3">Property Record</td></tr>
+        <tr class="row-a">
+          <td colspan="3">Jurisdiction:<br><strong>{Jurisdiction}</strong></td>
+        </tr>
+        <tr class="row-b">
+          <td>Jurisdiction code</td>
+          <td colspan="2">{Jurisdiction_Code}</td>
+        </tr>
+        <tr class="row-a">
+          <td colspan="3">Roll number:<br><strong>{Roll_Number}</strong></td>
+        </tr>
+
+        <!-- ── CURRENT USE ── -->
+        <tr class="section-head">
+          <td colspan="2">Current Use</td>
+          <td class="score-label">Score</td>
         </tr>
         <tr class="row-a">
           <td>Vacant</td>
           <td>{Vacant}</td>
+          <td class="score-col" rowspan="2">{Scr_vac_under} / 25</td>
         </tr>
         <tr class="row-b">
-          <td>Heritage designation <span class="row-note">if applicable</span></td>
-          <td>{Heritage_Type}</td>
-        </tr>
-        <tr class="row-a">
-          <td>Improvement value as % of land value</td>
-          <td>{PercentImproveLand}</td>
-        </tr>
-
-        <!-- ── PROPERTY RECORD ── -->
-        <tr class="section-head"><td colspan="2">Property Record</td></tr>
-        <tr class="row-a">
-          <td>Jurisdiction</td>
-          <td>{Jurisdiction}</td>
-        </tr>
-        <tr class="row-b">
-          <td>Jurisdiction code</td>
-          <td>{Jurisdiction_Code}</td>
-        </tr>
-        <tr class="row-a">
-          <td>Roll number</td>
-          <td>{Roll_Number}</td>
-        </tr>
-        <tr class="row-b">
-          <td>Neighbourhood</td>
-          <td>{Neighbourhood}</td>
+          <td>Underutilized</td>
+          <td>{Underutilized}</td>
         </tr>
 
         <!-- ── DEVELOPMENT CONTEXT ── -->
-        <tr class="section-head"><td colspan="2">Development Context</td></tr>
+        <tr class="section-head">
+          <td colspan="2">Development Context</td>
+          <td class="score-label">Score</td>
+        </tr>
         <tr class="row-a">
-          <td>TOA tier <span class="row-note">1 – 5, if applicable</span></td>
-          <td>{TOA_Tier}</td>
+          <td>Neighbourhood housing density <span class="row-note">highest nearby</span></td>
+          <td>{Max_Density_Cat}</td>
+          <td class="score-col">{Scr_density} / 14</td>
         </tr>
         <tr class="row-b">
           <td>Recent regional construction activity</td>
           <td>{DevCategory}</td>
+          <td class="score-col">{Scr_devcat} / 5</td>
         </tr>
         <tr class="row-a">
+          <td>TOA tier <span class="row-note">1 – 5, if applicable</span></td>
+          <td colspan="2">{TOA_Tier}</td>
+        </tr>
+        <tr class="row-b">
           <td>Traditional First Nations territories</td>
-          <td>{FNTerritories}</td>
+          <td colspan="2">{FNTerritories}</td>
         </tr>
 
         <!-- ── SITE CONDITIONS ── -->
-        <tr class="section-head"><td colspan="2">Site Conditions</td></tr>
+        <tr class="section-head">
+          <td colspan="2">Site Conditions</td>
+          <td class="score-label">Score</td>
+        </tr>
         <tr class="row-a">
-          <td>Mean slope</td>
+          <td>Mean slope <span class="row-note">degrees</span></td>
           <td>{Mean}</td>
+          <td class="score-col">{Scr_slope} / 5</td>
         </tr>
         <tr class="row-b">
-          <td>Parcel shape <span class="row-note">not applied to parcels &gt;5,000 m²</span></td>
-          <td>{Irregular}</td>
-        </tr>
-        <tr class="row-a">
           <td>Flood risk</td>
           <td>{Flood_Risk_Cat}</td>
+          <td class="score-col">{Scr_flood} / 5</td>
+        </tr>
+        <tr class="row-a">
+          <td>Parcel shape <span class="row-note">not applied to parcels &gt;5,000 m²</span></td>
+          <td>{Irregular}</td>
+          <td class="score-col">{Scr_shape} / 5</td>
         </tr>
         <tr class="row-b">
           <td>Fire risk</td>
           <td>{Fire_Risk}</td>
+          <td class="score-col">{Scr_fire} / 5</td>
         </tr>
+        <tr class="subtotal-row">
+          <td colspan="2">Site conditions subtotal</td>
+          <td class="score-col">{Scr_site} / 20</td>
+        </tr>
+        <tr class="section-head"><td colspan="3">Other Site Conditions</td></tr>
         <tr class="row-a">
           <td>Soil drainage <span class="row-note">limited data in urban areas</span></td>
-          <td>{DrainageClass}</td>
+          <td colspan="2">{DrainageClass}</td>
         </tr>
         <tr class="row-b">
           <td>Environmental remediation ID <span class="row-note">if applicable</span></td>
-          <td>{ENV_RMDTN_SITES_ID}</td>
+          <td colspan="2">{ENV_RMDTN_SITES_ID}</td>
         </tr>
         <tr class="row-a">
           <td>Riparian zone <span class="row-note">if applicable</span></td>
-          <td>{Riparian}</td>
+          <td colspan="2">{Riparian}</td>
         </tr>
 
         <!-- ── INFRASTRUCTURE ACCESS ── -->
-        <tr class="section-head"><td colspan="2">Infrastructure Access <span class="section-sub">distance in metres</span></td></tr>
+        <tr class="section-head"><td colspan="3">Infrastructure Access <span class="section-sub">distance in metres</span></td></tr>
         <tr class="row-a">
           <td>Distance to nearest road</td>
-          <td>{Road_Dist}</td>
+          <td colspan="2">{Road_Dist}</td>
         </tr>
         <tr class="row-b">
           <td>Distance to nearest water main</td>
-          <td>{WaterMain_Dist}</td>
+          <td colspan="2">{WaterMain_Clean}</td>
         </tr>
         <tr class="row-a">
           <td>Distance to nearest primary electrical grid</td>
-          <td>{BCHydroPrimary_Dist}</td>
+          <td colspan="2">{BCHydroPrimary_Clean}</td>
         </tr>
 
         <!-- ── POTENTIAL YIELD ── -->
-        <tr class="section-head"><td colspan="2">Potential Yield <span class="section-sub">housing units</span></td></tr>
+        <tr class="section-head"><td colspan="3">Potential Yield <span class="section-sub">housing units</span></td></tr>
         <tr class="row-a">
           <td>Existing scenario</td>
-          <td>{Yield_Existing}</td>
+          <td colspan="2">{Yield_Existing}</td>
         </tr>
         <tr class="row-b">
           <td>Median scenario</td>
-          <td>{Yield_Median}</td>
+          <td colspan="2">{Yield_Median}</td>
         </tr>
         <tr class="row-a">
           <td>High scenario</td>
-          <td>{Yield_Max}</td>
+          <td colspan="2">{Yield_Max}</td>
         </tr>
 
         <!-- ── PROXIMITY TO AMENITIES ── -->
-        <tr class="section-head"><td colspan="2">Proximity to Amenities <span class="section-sub">high, medium, low, or no access</span></td></tr>
+        <tr class="section-head">
+          <td colspan="2">Proximity to Amenities <span class="section-sub">excellent / good / poor / none</span></td>
+          <td class="score-label">Score</td>
+        </tr>
         <tr class="row-a">
-          <td>Cultural and arts facilities</td>
-          <td>{cat_caf}</td>
+          <td>Employment centres</td>
+          <td>{cat_emp}</td>
+          <td class="score-col">{Scr_emp} / 6</td>
         </tr>
         <tr class="row-b">
+          <td>Transit</td>
+          <td>{Transit_cat}</td>
+          <td class="score-col">{Scr_transit} / 6</td>
+        </tr>
+        <tr class="row-a">
           <td>Primary and secondary schools</td>
           <td>{cat_ef}</td>
-        </tr>
-        <tr class="row-a">
-          <td>Medical facilities</td>
-          <td>{cat_hf}</td>
+          <td class="score-col">{Scr_schools} / 6</td>
         </tr>
         <tr class="row-b">
-          <td>Post-secondary institutions</td>
-          <td>{cat_psef}</td>
+          <td>Medical facilities</td>
+          <td>{cat_hf}</td>
+          <td class="score-col">{Scr_health} / 6</td>
+        </tr>
+        <tr class="row-a">
+          <td>Grocery stores</td>
+          <td>{cat_gs}</td>
+          <td class="score-col">{Scr_grocery} / 3</td>
+        </tr>
+        <tr class="row-b">
+          <td>Pharmacies</td>
+          <td>{Pharmacy_cat}</td>
+          <td class="score-col">{Scr_pharmacy} / 3</td>
         </tr>
         <tr class="row-a">
           <td>Sports and recreational facilities</td>
           <td>{cat_srf}</td>
+          <td class="score-col">{Scr_srf} / 3</td>
         </tr>
         <tr class="row-b">
-          <td>Grocery stores</td>
-          <td>{cat_gs}</td>
+          <td>Childcare facilities</td>
+          <td>{cat_ccf}</td>
+          <td class="score-col">{Scr_childcare} / 3</td>
+        </tr>
+        <tr class="subtotal-row">
+          <td colspan="2">Amenity subtotal</td>
+          <td class="score-col">{Scr_amenity} / 36</td>
         </tr>
 
       </table>
@@ -480,19 +565,25 @@
     const params = new URLSearchParams(window.location.search);
 
     const fields = [
-      'PID_NUMBER','Area_m2','OwnerType','Actual_Use_Derived',
-      'Vacant','Heritage_Type','PercentImproveLand','Jurisdiction',
-      'Jurisdiction_Code','Roll_Number','Neighbourhood','TOA_Tier',
-      'DevCategory','FNTerritories','Mean','Irregular','Flood_Risk_Cat',
-      'Fire_Risk','DrainageClass','ENV_RMDTN_SITES_ID','Riparian',
-      'Road_Dist','WaterMain_Dist','BCHydroPrimary_Dist','Yield_Existing',
-      'Yield_Median','Yield_Max','cat_caf','cat_ef','cat_hf',
-      'cat_psef','cat_srf','cat_gs'
+      'PID_NUMBER','BCPLM_Score','Area_m2','OwnerType_Clean','Actual_Use_Derived',
+      'Heritage_Type','PercentImproveLand','Jurisdiction',
+      'Jurisdiction_Code','Roll_Number','TOA_Tier',
+      'Vacant','Underutilized','Scr_vac_under',
+      'Max_Density_Cat','Scr_density','DevCategory','Scr_devcat',
+      'FNTerritories','Mean','Scr_slope','Flood_Risk_Cat','Scr_flood',
+      'Irregular','Scr_shape','Fire_Risk','Scr_fire','Scr_site',
+      'DrainageClass','ENV_RMDTN_SITES_ID','Riparian',
+      'Road_Dist','WaterMain_Clean','BCHydroPrimary_Clean','Yield_Existing',
+      'Yield_Median','Yield_Max',
+      'cat_emp','Scr_emp','Transit_cat','Scr_transit',
+      'cat_ef','Scr_schools','cat_hf','Scr_health',
+      'cat_gs','Scr_grocery','Pharmacy_cat','Scr_pharmacy',
+      'cat_srf','Scr_srf','cat_ccf','Scr_childcare','Scr_amenity'
     ];
 
     // Fields that should be formatted with comma separators
     const numericFields = new Set([
-      'Area_m2','Road_Dist','WaterMain_Dist','BCHydroPrimary_Dist',
+      'Area_m2','Road_Dist','WaterMain_Clean','BCHydroPrimary_Clean',
       'Yield_Existing','Yield_Median','Yield_Max'
     ]);
 
