@@ -126,11 +126,12 @@
       letter-spacing: 0.05em;
     }
 
-    .report-header-right .datestamp {
+    .report-header-right .datestamp,
+    .report-header-left .datestamp {
       font-family: 'Open Sans', Arial, sans-serif !important;
       font-size: 0.62rem;
       color: var(--blue-acc);
-      margin-top: 0.3rem;
+      margin-top: 0.75rem;
       letter-spacing: 0.06em;
     }
 
@@ -319,15 +320,15 @@
       <div class="report-header-left">
         <h1>BC Public Lands<br>Parcel Report</h1>
         <p class="subtitle">Housing Assessment Resource Tools (HART)</p>
+        <p class="datestamp" id="datestamp"></p>
       </div>
       <div class="report-header-right">
         <p class="label">PID Number</p>
         <p class="pid">{PID_Formatted}</p>
-        <p class="label" style="margin-top:0.6rem;">BCPLM Score</p>
+        <p class="label" style="margin-top:1.4rem;">BCPLM Score</p>
         <div style="display:inline-block;background:#ffffff;color:#002145;font-size:0.95rem;font-weight:700;padding:4px 10px;border-radius:6px;border:2px solid #5bc4f5;letter-spacing:1px;">
           {BCPLM_Score} <span style="font-size:0.7rem;font-weight:400;color:#555;">/ 100</span>
         </div>
-        <p class="datestamp" id="datestamp"></p>
       </div>
     </div>
 
@@ -552,7 +553,7 @@
     <!-- Footer -->
     <div class="report-footer">
       <span>BC Public Lands — BCPLM</span>
-      <span id="footer-date"></span>
+      <span>hart.ubc.ca</span>
     </div>
 
   </div>
@@ -562,7 +563,6 @@
     const now = new Date();
     const fmt = now.toLocaleDateString('en-CA', { year: 'numeric', month: 'long', day: 'numeric' });
     document.getElementById('datestamp').textContent = 'Generated ' + fmt;
-    document.getElementById('footer-date').textContent = fmt;
 
     // URL PARAMETER AUTO-FILL
     // Reads ?field=value pairs from the URL and replaces matching
