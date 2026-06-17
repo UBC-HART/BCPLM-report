@@ -1,0 +1,122 @@
+<!-- Dynamic housing-yield table.
+     Host on GitHub Pages (like bcpl-report.html) and embed in ExB by URL,
+     OR paste into an Embed widget's "code" box if your version allows scripts.
+
+     HOW IT WORKS: one grouped-statistics query per column.
+     Each query = SUM(yieldField) GROUP BY catField -> gives all four rows at once. -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap');
+  .hy-wrap { font-family:'Open Sans',sans-serif; color:#2b2b2b; background:transparent; padding:4px; }
+  .hy-wrap h2 { font-family:'Bahnschrift','Open Sans',sans-serif !important; font-weight:600; font-size:16px; margin:0 0 10px 0; color:#1b3a5b; }
+  table.hy { width:100%; border-collapse:collapse; font-size:13px; font-variant-numeric:tabular-nums; }
+  table.hy th, table.hy td { padding:8px 12px; }
+  table.hy thead th { text-align:right; font-weight:600; color:#1b3a5b; border-bottom:2px solid #1b3a5b; white-space:nowrap; }
+  table.hy thead th:first-child { text-align:left; }
+  table.hy tbody td { text-align:right; border-bottom:1px solid #e3e6ea; }
+  table.hy tbody td:first-child { text-align:left; font-weight:600; color:#333; }
+  table.hy tbody tr:nth-child(even) td { background:#f7f9fb; }
+  table.hy tfoot td { text-align:right; font-weight:700; color:#1b3a5b; border-top:2px solid #1b3a5b; background:#eef3f8; }
+  table.hy tfoot td:first-child { text-align:left; }
+  .hy-note { font-size:11px; color:#777; margin-top:8px; }
+  .hy-err  { font-size:12px; color:#b00020; margin-top:8px; }
+  td.loading { color:#999; font-style:italic; }
+</style>
+
+<div class="hy-wrap">
+  <h2>Total Housing Yield by Density Scenario</h2>
+  <table class="hy">
+    <thead>
+      <tr>
+        <th>Density category</th>
+        <th id="h0"></th><th id="h1"></th><th id="h2"></th>
+      </tr>
+    </thead>
+    <tbody id="hy-body"></tbody>
+    <tfoot><tr id="hy-foot"></tr></tfoot>
+  </table>
+  <p class="hy-note">Scenarios are alternatives, not cumulative — totals shown per scenario only.</p>
+  <p class="hy-err" id="hy-err" style="display:none;"></p>
+</div>
+
+<script>
+// ====================== CONFIG — edit these ======================
+// Feature SERVICE URL (not the item ID). Grab it from the item page → service URL,
+// and append the layer index (/0, /1, ...). Use whichever layer has ONE row per parcel.
+const SERVICE_URL = "https://services2.arcgis.com/NlsizNmbMFiinWw4/arcgis/rest/services/BCPLM_Apr13/FeatureServer/20";
+
+// One entry per column, left→right. NOTE: field casing matches the live schema exactly ("Cat", not "cat").
+const COLUMNS = [
+  { label: "Current density",               catField: "Existing_density_Cat", yieldField: "Yield_Existing" },
+  { label: "Median neighbourhood density",  catField: "Median_density_Cat",   yieldField: "Yield_Median"   },
+  { label: "Highest neighbourhood density", catField: "Max_density_Cat",      yieldField: "Yield_Max"      },
+];
+
+// Rows, top→bottom. `value` must match the stored category string EXACTLY (case-sensitive).
+const ROWS = [
+  { value: "Low",       label: "<25 UPA — gentle density" },
+  { value: "Medium",    label: "25–140 UPA — low-rise (3–6 storey)" },
+  { value: "High",      label: "140–200 UPA — high-rise" },
+  { value: "Very High", label: ">200 UPA — dense high-rise" },
+];
+
+// If the layer is NOT shared publicly, set a token (or leave "" for public layers).
+const TOKEN = "";
+// =================================================================
+
+const fmt = v => (v == null ? "—" : Math.round(v).toLocaleString("en-CA"));
+
+async function fetchColumn(col) {
+  const params = new URLSearchParams({
+    where: "1=1",
+    groupByFieldsForStatistics: col.catField,
+    outStatistics: JSON.stringify([{
+      statisticType: "sum",
+      onStatisticField: col.yieldField,
+      outStatisticFieldName: "yld"
+    }]),
+    returnGeometry: "false",
+    f: "json"
+  });
+  if (TOKEN) params.set("token", TOKEN);
+  const res = await fetch(`${SERVICE_URL}/query?${params.toString()}`);
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message || "Query error");
+  const map = {};
+  (data.features || []).forEach(f => { map[f.attributes[col.catField]] = f.attributes.yld; });
+  return map;
+}
+
+function renderScaffold() {
+  COLUMNS.forEach((c, i) => { document.getElementById("h" + i).textContent = c.label; });
+  const body = document.getElementById("hy-body");
+  body.innerHTML = ROWS.map(r =>
+    `<tr><td>${r.label}</td>` + COLUMNS.map(() => `<td class="loading">…</td>`).join("") + `</tr>`
+  ).join("");
+}
+
+function renderData(colMaps) {
+  const body = document.getElementById("hy-body");
+  body.innerHTML = ROWS.map(r =>
+    `<tr><td>${r.label}</td>` +
+    colMaps.map(m => `<td>${fmt(m[r.value])}</td>`).join("") +
+    `</tr>`
+  ).join("");
+
+  // Column totals = sum of the four displayed rows (keeps total = visible rows).
+  const totals = colMaps.map(m => ROWS.reduce((s, r) => s + (m[r.value] || 0), 0));
+  document.getElementById("hy-foot").innerHTML =
+    `<td>Total units</td>` + totals.map(t => `<td>${fmt(t)}</td>`).join("");
+}
+
+(async () => {
+  renderScaffold();
+  try {
+    const colMaps = await Promise.all(COLUMNS.map(fetchColumn));
+    renderData(colMaps);
+  } catch (e) {
+    const err = document.getElementById("hy-err");
+    err.style.display = "block";
+    err.textContent = "Could not load data: " + e.message;
+  }
+})();
+</script>
