@@ -334,7 +334,7 @@
 
     <!-- Meta strip -->
     <div class="meta-strip">
-      <span>Address<br><strong>{full_address}</strong></span>
+      <span>Address<br><strong>{Full_Address}</strong></span>
       <span style="text-align:center;">Jurisdiction<br><strong>{Jurisdiction}</strong></span>
       <span style="text-align:right;">Roll Number<br><strong>{Roll_Number}</strong></span>
     </div>
@@ -362,6 +362,10 @@
           <td colspan="2">{Actual_Use_Derived}</td>
         </tr>
         <tr class="row-a">
+          <td>Zoning <span class="row-note">if available</span></td>
+          <td colspan="2">{Zoning_summary}</td>
+        </tr>
+        <tr class="row-b">
           <td>Heritage designation <span class="row-note">if applicable</span></td>
           <td colspan="2">{Heritage_Type}</td>
         </tr>
@@ -387,7 +391,7 @@
 
         <!-- ── CURRENT USE ── -->
         <tr class="section-head">
-          <td colspan="2">Current Use</td>
+          <td colspan="2">Vacant and underutilized</td>
           <td class="score-label">Score</td>
         </tr>
         <tr class="row-a">
@@ -417,10 +421,10 @@
         </tr>
         <tr class="row-a">
           <td>TOA tier <span class="row-note">1 – 5, if applicable</span></td>
-          <td colspan="2">{TOA_Tier}</td>
+          <td colspan="2">{TOA_Tier_Clean}</td>
         </tr>
         <tr class="row-b">
-          <td>Traditional First Nations territories</td>
+          <td>First Nations territories</td>
           <td colspan="2">{FNTerritories}</td>
         </tr>
 
@@ -431,7 +435,7 @@
         </tr>
         <tr class="row-a">
           <td>Mean slope <span class="row-note">degrees</span></td>
-          <td>{Mean}</td>
+          <td>{Slope_Popup}</td>
           <td class="score-col">{Scr_slope} / 5</td>
         </tr>
         <tr class="row-b">
@@ -446,7 +450,7 @@
         </tr>
         <tr class="row-b">
           <td>Fire risk</td>
-          <td>{Fire_Risk}</td>
+          <td>{Fire_Risk_Clean}</td>
           <td class="score-col">{Scr_fire} / 5</td>
         </tr>
         <tr class="subtotal-row">
@@ -460,7 +464,7 @@
         </tr>
         <tr class="row-b">
           <td>Environmental remediation ID <span class="row-note">if applicable</span></td>
-          <td colspan="2">{ENV_RMDTN_SITES_ID}</td>
+          <td colspan="2">{Env_Rem_ID_Clean}</td>
         </tr>
         <tr class="row-a">
           <td>Riparian zone <span class="row-note">if applicable</span></td>
@@ -570,14 +574,14 @@
     const params = new URLSearchParams(window.location.search);
 
     const fields = [
-      'PID_Formatted','BCPLM_Score','full_address','Area_m2','OwnerType_Clean','Actual_Use_Derived',
-      'Heritage_Type','PercentImproveLand','Jurisdiction',
-      'Jurisdiction_Code','Roll_Number','TOA_Tier',
+      'PID_Formatted','BCPLM_Score','Full_Address','Area_m2','OwnerType_Clean','Actual_Use_Derived',
+      'Zoning_summary','Heritage_Type','PercentImproveLand','Jurisdiction',
+      'Jurisdiction_Code','Roll_Number','TOA_Tier_Clean',
       'Vacant','Underutilized','Scr_vac_under',
       'Max_Density_Cat','Scr_density','DevCategory','Scr_devcat',
-      'FNTerritories','Mean','Scr_slope','Flood_Risk_Cat','Scr_flood',
-      'Irregular','Scr_shape','Fire_Risk','Scr_fire','Scr_site',
-      'DrainageClass','ENV_RMDTN_SITES_ID','Riparian',
+      'FNTerritories','Slope_Popup','Scr_slope','Flood_Risk_Cat','Scr_flood',
+      'Irregular','Scr_shape','Fire_Risk_Clean','Scr_fire','Scr_site',
+      'DrainageClass','Env_Rem_ID_Clean','Riparian',
       'Road_Dist','WaterMain_Clean','BCHydroPrimary_Clean','Yield_Existing',
       'Yield_Median','Yield_Max',
       'cat_emp','Scr_emp','Transit_cat','Scr_transit',
@@ -594,7 +598,7 @@
 
     // Fields that should show one decimal place, with an optional suffix
     const decimalFields = {
-      'Mean':                 { decimals: 1, suffix: '°' },
+      'Slope_Popup':          { decimals: 1, suffix: '°' },
       'PercentImproveLand':   { decimals: 1, suffix: '%' }
     };
 
