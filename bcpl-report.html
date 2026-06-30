@@ -366,6 +366,10 @@
           <td colspan="2">{Zoning_summary}</td>
         </tr>
         <tr class="row-b">
+          <td>First Nations territories</td>
+          <td colspan="2">{FNTerritories}</td>
+        </tr>
+        <tr class="row-a">
           <td>Heritage designation <span class="row-note">if applicable</span></td>
           <td colspan="2">{Heritage_Type}</td>
         </tr>
@@ -422,10 +426,6 @@
         <tr class="row-a">
           <td>TOA tier <span class="row-note">1 – 5, if applicable</span></td>
           <td colspan="2">{TOA_Tier_Clean}</td>
-        </tr>
-        <tr class="row-b">
-          <td>First Nations territories</td>
-          <td colspan="2">{FNTerritories}</td>
         </tr>
 
         <!-- ── SITE CONDITIONS ── -->
@@ -598,7 +598,6 @@
 
     // Fields that should show one decimal place, with an optional suffix
     const decimalFields = {
-      'Slope_Popup':          { decimals: 1, suffix: '°' },
       'PercentImproveLand':   { decimals: 1, suffix: '%' }
     };
 
